@@ -10,8 +10,24 @@ app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
+// Middleware to check if the user is logged in
 app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+  // check if user is logged in and has a valid token
+  if (req.session.authorization) {
+    let token = req.session.authorization['accessToken'];
+
+    // Verify JWT token
+    jwt.verify(token, "access", (err, user) => {
+      if (!err) {
+        req.user = user;
+        next();
+      } else {
+        res.status(403).json({message: "User not authenticated"});
+      }
+    });
+  } else {
+    res.status(403).json({message: "User not logged in"});
+  }
 });
  
 const PORT =5000;
