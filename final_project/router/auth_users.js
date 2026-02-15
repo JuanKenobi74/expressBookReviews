@@ -2,6 +2,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
+const {resetWatchers} = require("nodemon/lib/monitor/watch");
 const regd_users = express.Router();
 
 let users = [];
@@ -46,7 +47,7 @@ regd_users.post("/login", (req, res) => {
   if (authenticatedUser(username, password)) {
     // Generate JWT access token
     let accessToken = jwt.sign({
-      data: password
+      data: username
     }, 'access', { expiresIn: 60 * 60 });
 
     // Store access token and username in session
@@ -62,7 +63,40 @@ regd_users.post("/login", (req, res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn;
+  const reviewText = req.query.review;
+  const username = req.user.data;
+
+  if (books[isbn]) {
+    books[isbn].reviews[username] = reviewText;
+    return res.status(200).json({
+      message: `The review for ${books[isbn].title} was added successfully`
+    });
+  } else {
+    return res.status(404).json({message: `Book with ISBN ${isbn} not found`});
+  }
+});
+
+// delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  // extract isbn from request paramters
+  const isbn = req.params.isbn;
+  const username = req.user.data;
+  if (books[isbn]) {
+    // if review from the given username exists, delete it
+    if (books[isbn].reviews[username]) {
+      delete books[isbn].reviews[username];
+      return res.status(200).json({
+        message: `The review for ${books[isbn].title} by ${username} was deleted successfully`
+      });
+    } else {
+      return res.status(200).json({
+        message: `No review found for ${books[isbn].title} by ${username}`
+      });
+    }
+  } else {
+    return res.status(404).json({message: `Book with ISBN ${isbn} not found`});
+  }
 });
 
 module.exports.authenticated = regd_users;

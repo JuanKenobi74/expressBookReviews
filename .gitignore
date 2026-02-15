@@ -1,7 +1,7 @@
 # Distribution / packaging
 node_modules
-
-
+cookies*
+.cookies*
 .idea
 *~
 .*~
