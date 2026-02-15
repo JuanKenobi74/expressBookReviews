@@ -1,3 +1,4 @@
+// router/general.js
 const express = require('express');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
@@ -7,13 +8,28 @@ const public_users = express.Router();
 
 public_users.post("/register", (req,res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  // extract username and password from request body
+  const username = req.body.username;
+  const password = req.body.password;
+
+  // check if both username and password are provided
+  if (username && password) {
+    // if username isn't a valid username, add it to the users array
+    if (!isValid(username)) {
+      users.push({"username": username, "password": password});
+      return res.status(201).json({message: "User registered successfully"});
+    } else {
+      return res.status(400).json({message: "Username already exists"});
+    }
+  }
+  // return error message if username or password is not provided
+  return res.status(400).json({message: "Unable to register user. Please provide username and password"});
 });
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  return res.send(JSON.stringify(books, null, 4));
 });
 
 // Get book details based on ISBN
