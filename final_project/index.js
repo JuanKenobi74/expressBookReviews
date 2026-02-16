@@ -18,7 +18,6 @@ app.use("/customer/auth/*", function auth(req,res,next){
   // check if user is logged in and has a valid token
   if (req.session.authorization) {
     let token = req.session.authorization['accessToken'];
-    console.log(token);
 
     // Verify JWT token
     jwt.verify(token, "access", (err, user) => {
@@ -30,8 +29,6 @@ app.use("/customer/auth/*", function auth(req,res,next){
       }
     });
   } else {
-    let session = req.session;
-    console.log(session);
     res.status(403).json({message: "User not logged in"});
   }
 });
@@ -41,4 +38,4 @@ const PORT = 5000;
 app.use("/customer", customer_routes);
 app.use("/", genl_routes);
 
-app.listen(PORT,()=>console.log("Server is running"));
+app.listen(PORT,()=>console.log("Server is running on localhost:"+PORT));

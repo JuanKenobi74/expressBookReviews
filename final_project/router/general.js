@@ -28,10 +28,10 @@ public_users.post("/register", (req,res) => {
 });
 
 // async/await with Axios methods
-public_users.get("/async/books", async (req, res) => {
+public_users.get("/async", async (req, res) => {
   try {
     const response = await axios.get("http://localhost:5000");
-    return res.send(JSON.stringify(response.data, null, 4));
+    return res.status(200).send(JSON.stringify(response.data, null, 4));
   } catch (error) {
     console.error("Error fetching books:", error.message);
     return res.status(500).json({ message: "Error retrieving book list" });
